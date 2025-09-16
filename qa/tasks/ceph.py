@@ -1112,7 +1112,7 @@ def cluster(ctx, config):
     finally:
         (mon0_remote,) = ctx.cluster.only(firstmon).remotes.keys()
 
-        log.info('Checking cluster log for badness...')
+        log.info('Checking cluster log for badness changed...')
 
         def first_in_ceph_log(pattern, excludes):
             """
@@ -1123,13 +1123,9 @@ def cluster(ctx, config):
             :param excludes: Patterns to ignore.
             :return: First line of text (or None if not found)
             """
-            run.wait(ctx.cluster.run(args=[
-            'sudo', 'mkdir', '-p', '/var/log/ceph',
-            ]), wait=False)
+            ctx.cluster.run(args=['sudo', 'mkdir', '-p', '/var/log/ceph',]
 
-            run.wait(ctx.cluster.run(args=[
-                'sudo', 'touch', '/var/log/ceph/ceph.log',
-                ]), wait=False)
+            ctx.cluster.run(args=['sudo', 'touch', '/var/log/ceph/ceph.log',]
             log.info('touching /var/log/ceph/ceph.log success...')
             args = [
                 'sudo',
