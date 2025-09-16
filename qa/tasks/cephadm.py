@@ -428,16 +428,6 @@ def ceph_log(ctx, config):
             :param excludes: Patterns to ignore.
             :return: First line of text (or None if not found)
             """
-            run.wait(ctx.cluster.run(args=[
-            'sudo', 'mkdir', '-p', '/var/log/ceph/{fsid}'.format(
-                    fsid=fsid),
-            ]), wait=False)
-
-            run.wait(ctx.cluster.run(args=[
-                'sudo', 'touch', '/var/log/ceph/{fsid}/ceph.log'.format(
-                    fsid=fsid),
-                ]), wait=False)
-            log.info('touching /var/log/ceph/ceph.log success...')
             args = [
                 'sudo',
                 'egrep', pattern,
