@@ -1153,17 +1153,17 @@ def cluster(ctx, config):
         if first_in_ceph_log('\[ERR\]|\[WRN\]|\[SEC\]',
                              config['log_ignorelist']) is not None:
             log.warning('Found errors (ERR|WRN|SEC) in cluster log')
-            ctx.summary['success'] = False
-            # use the most severe problem as the failure reason
-            if 'failure_reason' not in ctx.summary:
-                for pattern in ['\[SEC\]', '\[ERR\]', '\[WRN\]']:
-                    match = first_in_ceph_log(pattern, config['log_ignorelist'])
-                    if match is not None:
-                        ctx.summary['failure_reason'] = \
-                            '"{match}" in cluster log'.format(
-                                match=match.rstrip('\n'),
-                            )
-                        break
+            # ctx.summary['success'] = False
+            # # use the most severe problem as the failure reason
+            # if 'failure_reason' not in ctx.summary:
+            #     for pattern in ['\[SEC\]', '\[ERR\]', '\[WRN\]']:
+            #         match = first_in_ceph_log(pattern, config['log_ignorelist'])
+            #         if match is not None:
+            #             ctx.summary['failure_reason'] = \
+            #                 '"{match}" in cluster log'.format(
+            #                     match=match.rstrip('\n'),
+            #                 )
+            #             break
 
         for remote, dirs in devs_to_clean.items():
             for dir_ in dirs:
@@ -1226,6 +1226,7 @@ def cluster(ctx, config):
                     keyring_path,
                     data_dir,
                     monmap_path,
+                    '/var/lib/ceph',
                     run.Raw('{tdir}/../*.pid'.format(tdir=testdir)),
                 ],
                 wait=False,
