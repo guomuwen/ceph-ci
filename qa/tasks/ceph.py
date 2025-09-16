@@ -1123,9 +1123,9 @@ def cluster(ctx, config):
             :param excludes: Patterns to ignore.
             :return: First line of text (or None if not found)
             """
-            ctx.cluster.run(args=['sudo', 'mkdir', '-p', '/var/log/ceph',]
+            ctx.cluster.run(args=['sudo', 'mkdir', '-p', '/var/log/ceph',])
 
-            ctx.cluster.run(args=['sudo', 'touch', '/var/log/ceph/ceph.log',]
+            ctx.cluster.run(args=['sudo', 'touch', '/var/log/ceph/ceph.log',])
             log.info('touching /var/log/ceph/ceph.log success...')
             args = [
                 'sudo',
