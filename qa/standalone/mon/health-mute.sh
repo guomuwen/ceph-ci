@@ -35,6 +35,8 @@ function TEST_mute() {
     ceph osd pool application enable foo rbd --yes-i-really-mean-it
     wait_for_clean || return 1
 
+    ceph mgr module disable dashboard
+    ceph mgr module disable restful
     ceph -s
     ceph health | grep HEALTH_OK || return 1
     # test warning on setting pool size=1

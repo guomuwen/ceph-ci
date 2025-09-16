@@ -418,6 +418,14 @@ def ceph_log(ctx, config):
 
     finally:
         log.info('Checking cluster log for badness...')
+        run.wait(ctx.cluster.run(args=[
+            'sudo', 'mkdir', '-p', '/var/log/ceph',
+            ]), wait=False)
+
+        run.wait(ctx.cluster.run(args=[
+            'sudo', 'touch', '/var/log/ceph/ceph.log',
+            ]), wait=False)
+        log.info('touching /var/log/ceph/ceph.log success...')
         def first_in_ceph_log(pattern, excludes, only_match):
             """
             Find the first occurrence of the pattern specified in the Ceph log,

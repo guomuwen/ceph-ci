@@ -93,7 +93,7 @@ class CBT(Task):
             )
         else:
             install_cmd = ['sudo', 'apt-get', '-y', '--force-yes', 'install']
-            cbt_depends = ['python3-yaml', 'python3-lxml', 'librbd-dev', 'collectl', 'linux-tools-generic']
+            cbt_depends = ['python3-yaml', 'python3-lxml', 'librbd-dev', 'collectl', 'linux-perf']
         self.first_mon.run(args=install_cmd + cbt_depends)
 
         benchmark_type = next(iter(self.cbt_config.get('benchmarks').keys()))

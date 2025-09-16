@@ -10,7 +10,7 @@ tasks:
       rpm:
         - perf
       deb:
-        - linux-tools-generic
+        - linux-perf
 - workunit:
     basedir: qa/standalone
     clients:
