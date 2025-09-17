@@ -123,6 +123,25 @@ def ceph_crash(ctx, config):
                 except ReadError:
                     pass
 
+@contextlib.contextmanager
+def delete_ceph_dirs(ctx, config):
+    """
+    Delete ceph directories
+    """
+
+    log.info('Deleting ceph directories...')
+    ctx.cluster.run(
+        args=[
+            'sudo',
+            'rm',
+            '-rf',
+            '--',
+            '/var/lib/ceph',
+            '/usr/share/ceph',
+            '/tmp/*',
+        ]
+    )
+
 
 @contextlib.contextmanager
 def ceph_log(ctx, config):
@@ -1153,17 +1172,17 @@ def cluster(ctx, config):
         if first_in_ceph_log('\[ERR\]|\[WRN\]|\[SEC\]',
                              config['log_ignorelist']) is not None:
             log.warning('Found errors (ERR|WRN|SEC) in cluster log')
-            # ctx.summary['success'] = False
-            # # use the most severe problem as the failure reason
-            # if 'failure_reason' not in ctx.summary:
-            #     for pattern in ['\[SEC\]', '\[ERR\]', '\[WRN\]']:
-            #         match = first_in_ceph_log(pattern, config['log_ignorelist'])
-            #         if match is not None:
-            #             ctx.summary['failure_reason'] = \
-            #                 '"{match}" in cluster log'.format(
-            #                     match=match.rstrip('\n'),
-            #                 )
-            #             break
+            ctx.summary['success'] = False
+            # use the most severe problem as the failure reason
+            if 'failure_reason' not in ctx.summary:
+                for pattern in ['\[SEC\]', '\[ERR\]', '\[WRN\]']:
+                    match = first_in_ceph_log(pattern, config['log_ignorelist'])
+                    if match is not None:
+                        ctx.summary['failure_reason'] = \
+                            '"{match}" in cluster log'.format(
+                                match=match.rstrip('\n'),
+                            )
+                        break
 
         for remote, dirs in devs_to_clean.items():
             for dir_ in dirs:
@@ -1226,7 +1245,6 @@ def cluster(ctx, config):
                     keyring_path,
                     data_dir,
                     monmap_path,
-                    '/var/lib/ceph',
                     run.Raw('{tdir}/../*.pid'.format(tdir=testdir)),
                 ],
                 wait=False,
@@ -1892,6 +1910,7 @@ def task(ctx, config):
         subtasks = [
             lambda: ceph_log(ctx=ctx, config=None),
             lambda: ceph_crash(ctx=ctx, config=None),
+            lambda: delete_ceph_dirs(ctx=ctx, config=None),
             lambda: valgrind_post(ctx=ctx, config=config),
         ]
 
