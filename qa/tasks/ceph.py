@@ -130,17 +130,20 @@ def delete_ceph_dirs(ctx, config):
     """
 
     log.info('Deleting ceph directories...')
-    ctx.cluster.run(
-        args=[
-            'sudo',
-            'rm',
-            '-rf',
-            '--',
-            '/var/lib/ceph',
-            '/usr/share/ceph',
-            '/tmp/*',
-        ]
-    )
+    try:
+        yield
+    finally:
+        ctx.cluster.run(
+            args=[
+                'sudo',
+                'rm',
+                '-rf',
+                '--',
+                '/var/lib/ceph',
+                '/usr/share/ceph',
+                '/tmp/*',
+            ]
+        )
 
 
 @contextlib.contextmanager
