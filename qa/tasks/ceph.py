@@ -1173,6 +1173,7 @@ def cluster(ctx, config):
                 'egrep', pattern,
                 '/var/log/ceph/{cluster}.log'.format(cluster=cluster_name),
             ]
+            excludes.append('OSD bench result of')
             for exclude in excludes:
                 args.extend([run.Raw('|'), 'egrep', '-v', exclude])
             args.extend([
