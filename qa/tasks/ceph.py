@@ -129,10 +129,10 @@ def delete_ceph_dirs(ctx, config):
     Delete ceph directories
     """
 
-    log.info('Deleting ceph directories...')
     try:
         yield
     finally:
+        log.info('Deleting ceph directories...')
         ctx.cluster.run(
             args=[
                 'sudo',
@@ -141,7 +141,26 @@ def delete_ceph_dirs(ctx, config):
                 '--',
                 '/var/lib/ceph',
                 '/usr/share/ceph',
-                '/tmp/*',
+            ]
+        )
+        ctx.cluster.run(
+            args=[
+                'sudo',
+                'find',
+                '/tmp',
+                '-name',
+                'ceph*',
+                '-delete',
+            ]
+        )
+        ctx.cluster.run(
+            args=[
+                'sudo',
+                'find',
+                '/tmp',
+                '-name',
+                'tmp.*',
+                '-delete',
             ]
         )
 
@@ -1912,8 +1931,8 @@ def task(ctx, config):
         # so they should only be run once
         subtasks = [
             lambda: ceph_log(ctx=ctx, config=None),
-            lambda: ceph_crash(ctx=ctx, config=None),
             lambda: delete_ceph_dirs(ctx=ctx, config=None),
+            lambda: ceph_crash(ctx=ctx, config=None),
             lambda: valgrind_post(ctx=ctx, config=config),
         ]
 
@@ -1924,7 +1943,7 @@ def task(ctx, config):
             mkfs_options=config.get('mkfs_options', None),
             mount_options=config.get('mount_options', None),
             skip_mgr_daemons=config.get('skip_mgr_daemons', False),
-            log_ignorelist=config.get('log-ignorelist', []),
+            log_ignorelist=config.get('log-ignorelist', ['OSD bench result of']),
             cpu_profile=set(config.get('cpu_profile', []),),
             cluster=config['cluster'],
             mon_bind_msgr2=config.get('mon_bind_msgr2', True),
