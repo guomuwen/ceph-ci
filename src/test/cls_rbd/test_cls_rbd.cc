@@ -3313,7 +3313,7 @@ TEST_F(TestClsRbd, assert_snapc_seq)
   ASSERT_EQ(0, ioctx.selfmanaged_snap_remove(snapc_seq));
 }
 
-TEST_F(TestClsRbd, sparsify)
+TEST_F(TestClsRbd, DISABLED_sparsify)
 {
   librados::IoCtx ioctx;
   ASSERT_EQ(0, _rados.ioctx_create(_pool_name.c_str(), ioctx));

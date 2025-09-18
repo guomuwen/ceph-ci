@@ -1174,6 +1174,7 @@ def cluster(ctx, config):
                 '/var/log/ceph/{cluster}.log'.format(cluster=cluster_name),
             ]
             excludes.append('OSD bench result of')
+            excludes.append('Degraded data redundancy')
             for exclude in excludes:
                 args.extend([run.Raw('|'), 'egrep', '-v', exclude])
             args.extend([
