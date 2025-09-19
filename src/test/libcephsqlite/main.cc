@@ -476,7 +476,7 @@ out:
   ASSERT_EQ(0, rc);
 }
 
-TEST_F(CephSQLiteTest, DISABLED_WALTransactionSync) {
+TEST_F(CephSQLiteTest, WALTransactionSync) {
   static const char SQL[] =
     "PRAGMA locking_mode=EXCLUSIVE;"
     "PRAGMA journal_mode=WAL;"
@@ -551,7 +551,7 @@ out:
   ASSERT_EQ(0, rc);
 }
 
-TEST_F(CephSQLiteTest, DISABLED_PersistTransactionSync) {
+TEST_F(CephSQLiteTest, PersistTransactionSync) {
   static const char SQL[] =
     "BEGIN TRANSACTION;"
     "CREATE TABLE foo (a INT);"
@@ -608,7 +608,7 @@ out:
   ASSERT_EQ(0, rc);
 }
 
-TEST_F(CephSQLiteTest, DISABLED_InsertExclusiveLock) {
+TEST_F(CephSQLiteTest, InsertExclusiveLock) {
   static const char SQL[] =
     "PRAGMA locking_mode=EXCLUSIVE;"
     "CREATE TABLE foo (a INT);"
@@ -677,7 +677,7 @@ out:
   ASSERT_EQ(0, rc);
 }
 
-TEST_F(CephSQLiteTest, DISABLED_TransactionSizeUpdate) {
+TEST_F(CephSQLiteTest, TransactionSizeUpdate) {
   static const char SQL[] =
     "BEGIN TRANSACTION;"
     "CREATE TABLE foo (a INT);"
@@ -736,7 +736,7 @@ out:
   ASSERT_EQ(0, rc);
 }
 
-TEST_F(CephSQLiteTest, DISABLED_AllocatedGrowth) {
+TEST_F(CephSQLiteTest, AllocatedGrowth) {
   static const char SQL[] =
     "CREATE TABLE foo (a BLOB);"
     "WITH RECURSIVE c(x) AS"
@@ -836,7 +836,7 @@ out:
     ASSERT_EQ(0, rc);
 }
 
-TEST_F(CephSQLiteTest, DISABLED_DropMassive) {
+TEST_F(CephSQLiteTest, DropMassive) {
   static const char SQL[] =
     "CREATE TABLE foo (a BLOB);"
     "WITH RECURSIVE c(x) AS"
