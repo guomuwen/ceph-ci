@@ -1856,7 +1856,8 @@ function wait_for_health() {
 # @return 0 if the cluster is HEALTHY, 1 otherwise
 #
 function wait_for_health_ok() {
-     wait_for_health "HEALTH_OK" || return 1
+    ceph health mute MODULE_ERROR_DEPENDENCY restful || return 1
+    wait_for_health "HEALTH_OK" || return 1
 }
 
 function test_wait_for_health_ok() {

@@ -199,7 +199,6 @@ function TEST_mon_last_clean_epoch() {
 
   ceph osd set-full-ratio 0.97
   ceph osd set-backfillfull-ratio 0.97
-
   wait_for_health_ok || exit 1
 
   pre_map_diff=$(get_fc_lc_diff)

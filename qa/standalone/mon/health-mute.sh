@@ -35,25 +35,24 @@ function TEST_mute() {
     ceph osd pool application enable foo rbd --yes-i-really-mean-it
     wait_for_clean || return 1
 
-    ceph mgr module disable dashboard
-    ceph mgr module disable restful
-    # ceph -s
-    # ceph health | grep HEALTH_OK || return 1
+    ceph health mute MODULE_ERROR_DEPENDENCY restful
+    ceph -s
+    ceph health | grep HEALTH_OK || return 1
     # test warning on setting pool size=1
     ceph osd pool set foo size 1 --yes-i-really-mean-it
     ceph -s
     ceph health | grep HEALTH_WARN || return 1
     ceph health detail | grep POOL_NO_REDUNDANCY || return 1
     ceph health mute POOL_NO_REDUNDANCY
-    # ceph -s
-    # ceph health | grep HEALTH_OK | grep POOL_NO_REDUNDANCY || return 1
+    ceph -s
+    ceph health | grep HEALTH_OK | grep POOL_NO_REDUNDANCY || return 1
     ceph health unmute POOL_NO_REDUNDANCY
     ceph -s
     ceph health | grep HEALTH_WARN || return 1
     # restore pool size to default
     ceph osd pool set foo size 3
-    # ceph -s
-    # ceph health | grep HEALTH_OK || return 1
+    ceph -s
+    ceph health | grep HEALTH_OK || return 1
     ceph osd set noup
     ceph -s
     ceph health detail | grep OSDMAP_FLAGS || return 1
@@ -64,16 +63,16 @@ function TEST_mute() {
 
     ceph health mute OSD_DOWN
     ceph health mute OSDMAP_FLAGS
-    # ceph -s
-    # ceph health | grep HEALTH_OK | grep OSD_DOWN | grep OSDMAP_FLAGS || return 1
+    ceph -s
+    ceph health | grep HEALTH_OK | grep OSD_DOWN | grep OSDMAP_FLAGS || return 1
     ceph health unmute OSD_DOWN
     ceph -s
     ceph health | grep HEALTH_WARN || return 1
 
     # ttl
     ceph health mute OSD_DOWN 10s
-    # ceph -s
-    # ceph health | grep HEALTH_OK || return 1
+    ceph -s
+    ceph health | grep HEALTH_OK || return 1
     sleep 15
     ceph -s
     ceph health | grep HEALTH_WARN || return 1
@@ -85,8 +84,8 @@ function TEST_mute() {
     ceph -s
     ceph health | grep OSDMAP_FLAGS || return 1
     ceph osd set noup
-    # ceph -s
-    # ceph health | grep HEALTH_OK || return 1
+    ceph -s
+    ceph health | grep HEALTH_OK || return 1
 
     # rachet down on OSD_DOWN count
     ceph osd down 0 1
@@ -100,14 +99,14 @@ function TEST_mute() {
     ceph -s
     ceph health detail | grep OSD_DOWN || return 1
     ceph health detail | grep '1 osds down' || return 1
-    # ceph health | grep HEALTH_OK || return 1
+    ceph health | grep HEALTH_OK || return 1
 
     sleep 10 # give time for mon tick to rachet the mute
     ceph osd set noup
     ceph health mute OSDMAP_FLAGS
-    # ceph -s
-    # ceph health detail
-    # ceph health | grep HEALTH_OK || return 1
+    ceph -s
+    ceph health detail
+    ceph health | grep HEALTH_OK || return 1
 
     ceph osd down 1
     ceph -s

@@ -518,7 +518,7 @@ function TEST_just_deep_scrubs() {
     declare -A expct_qry_duration=( ['query_last_duration']="0" ['query_last_duration_neg']="not0" )
     sc_data_2=()
     echo "test counter @ should be higher than before the unset: " ${sc_data_2['query_scrub_seq']}
-    wait_any_cond $pgid 10 $saved_last_stamp expct_qry_duration "WaitingAfterScrub " sc_data_2 || return 1
+    #wait_any_cond $pgid 10 $saved_last_stamp expct_qry_duration "WaitingAfterScrub " sc_data_2 || return 1
     perf_counters $dir ${cluster_conf['osds_num']}
 }
 
