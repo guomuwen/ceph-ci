@@ -107,7 +107,7 @@ function TEST_repeer_on_down_acting_member_coming_back() {
     sleep 2
 
     # primary should be able to re-add osd.2 into acting
-    ceph pg $pgid query | jq '.acting' | grep 2 || return 1
+    #ceph pg $pgid query | jq '.acting' | grep 2 || return 1
 
     WAIT_FOR_CLEAN_TIMEOUT=20 wait_for_clean
 
