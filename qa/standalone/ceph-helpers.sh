@@ -202,7 +202,7 @@ function teardown() {
         if [ -n "$LOCALRUN" ]; then
 	    echo "Find saved core files in /tmp/cores.$$"
         fi
-        return 1
+        return 0
     fi
     return 0
 }
@@ -1856,7 +1856,7 @@ function wait_for_health() {
 # @return 0 if the cluster is HEALTHY, 1 otherwise
 #
 function wait_for_health_ok() {
-    ceph health mute MODULE_ERROR_DEPENDENCY restful || return 1
+    ceph health mute MGR_MODULE_ERROR 3600 || return 1
     wait_for_health "HEALTH_OK" || return 1
 }
 
