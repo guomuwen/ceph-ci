@@ -16,5 +16,3 @@ tasks:
     clients:
       all:
         - scrub
-          exclude:
-            - osd-mapper.sh
