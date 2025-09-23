@@ -39,6 +39,36 @@ DATA_PATH = '/var/lib/ceph/{type_}/{cluster}-{id_}'
 log = logging.getLogger(__name__)
 
 
+def _cleanup_ceph_osd_mounts(ctx):
+    """
+    Detect and clean up Ceph OSD mount points under /var/lib/ceph/osd/ceph-*
+    For each mountpoint found:
+      - umount -f <target>
+      - if source is a block device (/dev/*), wipefs -a <source>
+    """
+    log.info('Checking and cleaning Ceph OSD mount points...')
+    # Use a portable pipeline: parse /proc/mounts, filter targets under ceph osd path,
+    # then iterate and umount/wipefs as needed on all remotes.
+    # We intentionally ignore failures per entry to be robust during teardown.
+    ctx.cluster.run(
+        args=[
+            'bash', '-lc',
+            (
+                'set -o pipefail; '
+                'grep -E " \\/var\\/lib\\/ceph\\/osd\\/ceph-" /proc/mounts '
+                '| awk "{print \\x24 1, \\x24 2}" '
+                '| while read -r src tgt; do '
+                '  echo "Cleaning mount: $tgt (src=$src)"; '
+                '  sudo umount -f "$tgt" || true; '
+                '  if [[ "$src" == /dev/* ]]; then '
+                '    sudo wipefs -a "$src" || true; '
+                '  fi; '
+                'done'
+            )
+        ]
+    )
+
+
 def generate_caps(type_):
     """
     Each call will return the next capability for each system type
@@ -132,6 +162,11 @@ def delete_ceph_dirs(ctx, config):
     try:
         yield
     finally:
+        # Before deleting directories, ensure any OSD mountpoints are unmounted and their devices wiped
+        try:
+            _cleanup_ceph_osd_mounts(ctx)
+        except Exception as e:
+            log.warning('OSD mount cleanup encountered an error: %s', e)
         log.info('Deleting ceph directories...')
         ctx.cluster.run(
             args=[
