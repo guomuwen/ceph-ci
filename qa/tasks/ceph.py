@@ -54,16 +54,15 @@ def _cleanup_ceph_osd_mounts(ctx):
         args=[
             'bash', '-lc',
             (
-                'set -o pipefail; '
-                'grep -E " \\/var\\/lib\\/ceph\\/osd\\/ceph-" /proc/mounts '
-                '| awk "{print \\x24 1, \\x24 2}" '
-                '| while read -r src tgt; do '
-                '  echo "Cleaning mount: $tgt (src=$src)"; '
-                '  sudo umount -f "$tgt" || true; '
-                '  if [[ "$src" == /dev/* ]]; then '
-                '    sudo wipefs -a "$src" || true; '
-                '  fi; '
-                'done'
+                "grep -E ' /var/lib/ceph/osd/ceph-' /proc/mounts "
+                "| awk '{print $1, $2}' "
+                "| while read -r src tgt; do "
+                "  echo \"Cleaning mount: $tgt (src=$src)\"; "
+                "  sudo umount -f \"$tgt\" || true; "
+                "  if [[ \"$src\" == /dev/* ]]; then "
+                "    sudo wipefs -a \"$src\" || true; "
+                "  fi; "
+                "done"
             )
         ]
     )
