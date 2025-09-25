@@ -3,4 +3,4 @@
 set -ex
 
 dbench 1
-dbench 10
+dbench 3 -t 60
