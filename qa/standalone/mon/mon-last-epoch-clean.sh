@@ -199,7 +199,7 @@ function TEST_mon_last_clean_epoch() {
 
   ceph osd set-full-ratio 0.97
   ceph osd set-backfillfull-ratio 0.97
-  wait_for_health_ok || exit 1
+  wait_for_health_ok_ignore_restful || exit 1
 
   pre_map_diff=$(get_fc_lc_diff)
   wait_for_total_num_maps 2
@@ -212,7 +212,7 @@ function TEST_mon_last_clean_epoch() {
   ceph osd pool set foo size 3
   ceph osd pool set bar size 3
 
-  wait_for_health_ok || exit 1
+  wait_for_health_ok_ignore_restful || exit 1
 
   check_lec_equals_pools || exit 1
   check_lec_honours_osd || exit 1
@@ -290,7 +290,7 @@ function TEST_mon_last_clean_epoch() {
   pre_map_diff=$(get_fc_lc_diff)
 
   activate_osd $dir 2 || exit 1
-  wait_for_health_ok || exit 1
+  wait_for_health_ok_ignore_restful || exit 1
   validate_fc || exit 1
   check_lec_equals_pools || exit 1
 

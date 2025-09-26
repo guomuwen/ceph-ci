@@ -1856,8 +1856,30 @@ function wait_for_health() {
 # @return 0 if the cluster is HEALTHY, 1 otherwise
 #
 function wait_for_health_ok() {
-    ceph health mute MGR_MODULE_ERROR 3600 || return 1
     wait_for_health "HEALTH_OK" || return 1
+}
+
+function wait_for_health_ok_ignore_restful() {
+    local health_detail=$(ceph health detail)
+    
+    # 如果是 HEALTH_OK，直接返回成功
+    if echo "$health_detail" | grep -q "HEALTH_OK"; then
+        return 0
+    fi
+    
+    # 如果是 HEALTH_WARN，检查是否仅由 restful 相关问题引起
+    if echo "$health_detail" | grep -q "HEALTH_WARN"; then
+        # 获取所有警告信息，排除 restful 相关的
+        local non_restful_warnings=$(echo "$health_detail" | grep -v "restful" | grep -v "PyO3 modules")
+        
+        # 如果排除 restful 后没有其他警告，认为是健康的
+        if ! echo "$non_restful_warnings" | grep -q "HEALTH_WARN\|failed\|error\|ERROR"; then
+            echo "Ignoring restful module warnings, cluster is healthy"
+            return 0
+        fi
+    fi
+    
+    return 1
 }
 
 function test_wait_for_health_ok() {

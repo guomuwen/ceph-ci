@@ -19,29 +19,6 @@ function run() {
     done
 }
 
-check_health_ignore_restful() {
-    local health_detail=$(ceph health detail)
-    
-    # 如果是 HEALTH_OK，直接返回成功
-    if echo "$health_detail" | grep -q "HEALTH_OK"; then
-        return 0
-    fi
-    
-    # 如果是 HEALTH_WARN，检查是否仅由 restful 相关问题引起
-    if echo "$health_detail" | grep -q "HEALTH_WARN"; then
-        # 获取所有警告信息，排除 restful 相关的
-        local non_restful_warnings=$(echo "$health_detail" | grep -v "restful" | grep -v "PyO3 modules")
-        
-        # 如果排除 restful 后没有其他警告，认为是健康的
-        if ! echo "$non_restful_warnings" | grep -q "HEALTH_WARN\|failed\|error\|ERROR"; then
-            echo "Ignoring restful module warnings, cluster is healthy"
-            return 0
-        fi
-    fi
-    
-    return 1
-}
-
 function TEST_mute() {
     local dir=$1
     setup $dir || return 1
@@ -59,7 +36,7 @@ function TEST_mute() {
     wait_for_clean || return 1
 
     ceph -s
-    check_health_ignore_restful || return 1
+    wait_for_health_ok_ignore_restful || return 1
     # test warning on setting pool size=1
     ceph osd pool set foo size 1 --yes-i-really-mean-it
     ceph -s
@@ -74,7 +51,7 @@ function TEST_mute() {
     # restore pool size to default
     ceph osd pool set foo size 3
     ceph -s
-    check_health_ignore_restful || return 1
+    wait_for_health_ok_ignore_restful || return 1
     ceph osd set noup
     ceph -s
     ceph health detail | grep OSDMAP_FLAGS || return 1
@@ -94,7 +71,7 @@ function TEST_mute() {
     # ttl
     ceph health mute OSD_DOWN 10s
     ceph -s
-    check_health_ignore_restful || return 1
+    wait_for_health_ok_ignore_restful || return 1
     sleep 15
     ceph -s
     ceph health | grep HEALTH_WARN || return 1
@@ -107,7 +84,7 @@ function TEST_mute() {
     ceph health | grep OSDMAP_FLAGS || return 1
     ceph osd set noup
     ceph -s
-    check_health_ignore_restful || return 1
+    wait_for_health_ok_ignore_restful || return 1
 
     # rachet down on OSD_DOWN count
     ceph osd down 0 1
@@ -121,14 +98,14 @@ function TEST_mute() {
     ceph -s
     ceph health detail | grep OSD_DOWN || return 1
     ceph health detail | grep '1 osds down' || return 1
-    check_health_ignore_restful || return 1
+    wait_for_health_ok_ignore_restful || return 1
 
     sleep 10 # give time for mon tick to rachet the mute
     ceph osd set noup
     ceph health mute OSDMAP_FLAGS
     ceph -s
     ceph health detail
-    check_health_ignore_restful || return 1
+    wait_for_health_ok_ignore_restful || return 1
 
     ceph osd down 1
     ceph -s
