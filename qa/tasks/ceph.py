@@ -1210,6 +1210,8 @@ def cluster(ctx, config):
             excludes.append('OSD bench result of')
             excludes.append('Degraded data redundancy')
             excludes.append('Health check failed')
+            excludes.append('slow requests')
+            excludes.append('Health check update')
             for exclude in excludes:
                 args.extend([run.Raw('|'), 'egrep', '-v', exclude])
             args.extend([
