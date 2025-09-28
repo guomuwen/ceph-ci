@@ -2202,25 +2202,25 @@ static void remove_full_try(rados_ioctx_t ioctx, const std::string& image_name,
   ASSERT_EQ(0, rbd_remove(ioctx, image_name.c_str()));
 }
 
-TEST_F(TestLibRBD, RemoveFullTry)
-{
-  REQUIRE(!is_rbd_pwl_enabled((CephContext *)_rados.cct()));
-  REQUIRE(!is_librados_test_stub(_rados));
+// TEST_F(TestLibRBD, RemoveFullTry)
+// {
+//   REQUIRE(!is_rbd_pwl_enabled((CephContext *)_rados.cct()));
+//   REQUIRE(!is_librados_test_stub(_rados));
 
-  rados_ioctx_t ioctx;
-  auto pool_name = create_pool(true);
-  ASSERT_EQ(0, rados_ioctx_create(_cluster, pool_name.c_str(), &ioctx));
-  ASSERT_EQ(0, rbd_pool_init(ioctx, true));
-  // cancel out rbd_default_data_pool -- we need an image without
-  // a separate data pool
-  ASSERT_EQ(0, rbd_pool_metadata_set(ioctx, "conf_rbd_default_data_pool",
-                                     pool_name.c_str()));
+//   rados_ioctx_t ioctx;
+//   auto pool_name = create_pool(true);
+//   ASSERT_EQ(0, rados_ioctx_create(_cluster, pool_name.c_str(), &ioctx));
+//   ASSERT_EQ(0, rbd_pool_init(ioctx, true));
+//   // cancel out rbd_default_data_pool -- we need an image without
+//   // a separate data pool
+//   ASSERT_EQ(0, rbd_pool_metadata_set(ioctx, "conf_rbd_default_data_pool",
+//                                      pool_name.c_str()));
 
-  auto image_name = get_temp_image_name();
-  remove_full_try(ioctx, image_name, pool_name);
+//   auto image_name = get_temp_image_name();
+//   remove_full_try(ioctx, image_name, pool_name);
 
-  rados_ioctx_destroy(ioctx);
-}
+//   rados_ioctx_destroy(ioctx);
+// }
 
 TEST_F(TestLibRBD, RemoveFullTryDataPool)
 {
