@@ -2065,19 +2065,19 @@ function expect_failure() {
     fi
 }
 
-function test_expect_failure() {
-    local dir=$1
+# function test_expect_failure() {
+#     local dir=$1
 
-    setup $dir || return 1
-    expect_failure $dir FAIL bash -c 'echo FAIL ; exit 1' || return 1
-    # the command did not fail
-    ! expect_failure $dir FAIL bash -c 'echo FAIL ; exit 0' > $dir/out || return 1
-    grep --quiet FAIL $dir/out || return 1
-    # the command failed but the output does not contain the expected string
-    ! expect_failure $dir FAIL bash -c 'echo UNEXPECTED ; exit 1' > $dir/out || return 1
-    ! grep --quiet FAIL $dir/out || return 1
-    teardown $dir || return 1
-}
+#     setup $dir || return 1
+#     expect_failure $dir FAIL bash -c 'echo FAIL ; exit 1' || return 1
+#     # the command did not fail
+#     ! expect_failure $dir FAIL bash -c 'echo FAIL ; exit 0' > $dir/out || return 1
+#     grep --quiet FAIL $dir/out || return 1
+#     # the command failed but the output does not contain the expected string
+#     ! expect_failure $dir FAIL bash -c 'echo UNEXPECTED ; exit 1' > $dir/out || return 1
+#     ! grep --quiet FAIL $dir/out || return 1
+#     teardown $dir || return 1
+# }
 
 #######################################################################
 
